@@ -36,6 +36,8 @@ sequenceDiagram
     deactivate server
 
     Note right of browser: The page does not reload, the new note is displayed instantly
+```
+reload, the new note is displayed instantly
 
     server-->>browser: the JavaScript file
     deactivate server
