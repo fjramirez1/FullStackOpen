@@ -37,16 +37,3 @@ sequenceDiagram
 
     Note right of browser: The page does not reload, the new note is displayed instantly
 ```
-reload, the new note is displayed instantly
-
-    server-->>browser: the JavaScript file
-    deactivate server
-
-    Note right of browser: The browser executes JavaScript to fetch updated data
-    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
-    activate server
-    server-->>browser: JSON with updated notes
-    deactivate server
-
-    Note right of browser: The browser renders the list of notes
-```
