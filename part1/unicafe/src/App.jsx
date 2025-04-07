@@ -11,10 +11,20 @@ const Statistic = ({text, value}) => (
 )
 
 const App = () => {
-  // guarda los clics de cada botón en su propio estado
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
+
+  const average = (...numbers) => {
+    if (numbers.length === 0) return 0
+    const sum = numbers.reduce((acc, curr) => acc + curr, 0)
+    return sum / numbers.length
+  }
+
+  const positive = () => {
+    const all = good + neutral + bad
+    return all === 0 ? 0 : (good / all) * 100
+  }
 
   return (
     <div>
@@ -26,6 +36,9 @@ const App = () => {
       <Statistic text="good" value={good} />
       <Statistic text="neutral" value={neutral} />
       <Statistic text="bad" value={bad} />
+      <Statistic text="all" value={good + neutral + bad} />
+      <Statistic text="average" value={average(good, neutral, bad)} />
+      <Statistic text="positive" value={`${positive()} %`} />
     </div>
   )
 }
