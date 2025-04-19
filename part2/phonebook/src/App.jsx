@@ -18,6 +18,21 @@ const App = () => {
           })
   }, [])
 
+  const removePerson = (id) => {
+    const person = people.find(p => p.id === id)
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personService
+        .remove(id)
+        .then(() => {
+          setPeople(people.filter(p => p.id !== id))
+        })
+        .catch(error => {
+          alert(`Information of ${person.name} has already been removed from server`)
+          setPeople(people.filter(p => p.id !== id))
+        })
+    }
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
     const person = {
@@ -67,7 +82,11 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <People people={people} newFilter={newFilter} />
+      <People
+        people={people}
+        newFilter={newFilter}
+        removePerson={removePerson}
+      />
     </div>
   )
 }
