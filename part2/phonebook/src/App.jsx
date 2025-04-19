@@ -1,57 +1,55 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import People from './components/People'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
+import personService from './services/persons'
 
 const App = () => {
   const [people, setPeople] = useState([])
   const [newName, setNewName] = useState('')
-  const [newPhone, setNewPhone] = useState('')
+  const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
 
   useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPeople(response.data)
-      })
+    personService
+          .getAll()
+          .then(initialPeople => {
+            setPeople(initialPeople)
+          })
   }, [])
-
-  console.log('render', people.length, 'persons')
 
   const addPerson = (event) => {
     event.preventDefault()
     const person = {
       name: newName,
-      phone: newPhone,
-      id: people.length + 1
+      number: newNumber
     }
-    console.log(person)
+    
     const personExists = people.some(p => p.name === person.name)
     if (personExists) {
       alert(`${person.name} is already added to phonebook`)
       return
     }
-    setPeople(people.concat(person))
+
+    personService
+          .create(person)
+          .then(returnedPerson => {
+            setPeople(people.concat(returnedPerson))
+          })
+    
     setNewName('')
-    setNewPhone('')
+    setNewNumber('')
   }
 
   const handleNameChange = (event) => {
-    console.log(event.target.value)
     setNewName(event.target.value)
   }
 
-  const handlePhoneChange = (event) => {
-    console.log(event.target.value)
-    setNewPhone(event.target.value)
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
   }
 
   const handleFilterChange = (event) => {
-    console.log(event.target.value)
     setNewFilter(event.target.value)
   }
 
@@ -64,8 +62,8 @@ const App = () => {
         addPerson={addPerson}
         newName={newName}
         handleNameChange={handleNameChange}
-        newPhone={newPhone} // ✅
-        handlePhoneChange={handlePhoneChange} // ✅
+        newNumber={newNumber}
+        handleNumberChange={handleNumberChange}
       />
 
       <h2>Numbers</h2>
