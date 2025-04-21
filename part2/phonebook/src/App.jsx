@@ -3,12 +3,14 @@ import People from './components/People'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [people, setPeople] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -30,6 +32,11 @@ const App = () => {
           alert(`Information of ${person.name} has already been removed from server`)
           setPeople(people.filter(p => p.id !== id))
         })
+
+      setSuccessMessage(`Deleted ${person.name}`)
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
     }
   }
 
@@ -51,6 +58,11 @@ const App = () => {
           .then(returnedPerson => {
             setPeople(people.map(p => p.id !== existingPerson.id ? p : returnedPerson))
           })
+
+        setSuccessMessage(`Updated ${person.name}'s number`)
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)
       }
     } else {
       personService
@@ -58,6 +70,11 @@ const App = () => {
           .then(returnedPerson => {
             setPeople(people.concat(returnedPerson))
           })
+
+      setSuccessMessage(`Added ${person.name}`)
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
     }
     setNewName('')
     setNewNumber('')
@@ -78,6 +95,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={successMessage} />
       <Filter filter={newFilter} handleFilterChange={handleFilterChange} />
       <h2>add a new</h2>
       <PersonForm
