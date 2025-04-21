@@ -4,6 +4,7 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import personService from './services/persons'
 import Notification from './components/Notification'
+import Error from './components/Error'
 
 const App = () => {
   const [people, setPeople] = useState([])
@@ -11,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
   const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -27,16 +29,18 @@ const App = () => {
         .remove(id)
         .then(() => {
           setPeople(people.filter(p => p.id !== id))
+          setSuccessMessage(`Deleted ${person.name}`)
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
         })
         .catch(error => {
-          alert(`Information of ${person.name} has already been removed from server`)
+          setErrorMessage(`Information of ${person.name} has already been removed from server`)
           setPeople(people.filter(p => p.id !== id))
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
-
-      setSuccessMessage(`Deleted ${person.name}`)
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 5000)
     }
   }
 
@@ -57,24 +61,35 @@ const App = () => {
           .update(existingPerson.id, updatedPerson)
           .then(returnedPerson => {
             setPeople(people.map(p => p.id !== existingPerson.id ? p : returnedPerson))
+            setSuccessMessage(`Updated ${person.name}'s number`)
+            setTimeout(() => {
+              setSuccessMessage(null)
+            }, 5000)
           })
-
-        setSuccessMessage(`Updated ${person.name}'s number`)
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 5000)
+          .catch(error => {
+            setErrorMessage(`Information of ${person.name} has already been removed from server`)
+            setPeople(people.filter(p => p.id !== existingPerson.id))
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
+          })
       }
     } else {
       personService
           .create(person)
           .then(returnedPerson => {
             setPeople(people.concat(returnedPerson))
+            setSuccessMessage(`Added ${person.name}`)
+            setTimeout(() => {
+              setSuccessMessage(null)
+            }, 5000)
           })
-
-      setSuccessMessage(`Added ${person.name}`)
-      setTimeout(() => {
-        setSuccessMessage(null)
-      }, 5000)
+          .catch(error => {
+            setErrorMessage(error.response.data.error)
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
+          })
     }
     setNewName('')
     setNewNumber('')
@@ -95,6 +110,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Error message={errorMessage} />
       <Notification message={successMessage} />
       <Filter filter={newFilter} handleFilterChange={handleFilterChange} />
       <h2>add a new</h2>
